@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Connexion - Ymmo V2</title>
+    <link rel="stylesheet" href="css/main.css">
+</head>
+
+<body
+    style="display:flex; align-items:center; justify-content:center; height:100vh; background-color: var(--bg-creme);">
+
+    <div class="card" style="width: 100%; max-width: 400px; padding: 2rem;">
+        <h1 style="text-align: center; color: var(--accent-bleu); margin-bottom: 2rem;">Espace Pro</h1>
+
+        <form id="loginForm">
+            <label>Adresse E-mail</label>
+            <input type="email" id="email" required>
+
+            <label>Mot de passe</label>
+            <input type="password" id="password" required>
+
+            <button type="submit" class="btn btn-primary" style="width:100%; margin-top: 1rem;">Se connecter</button>
+        </form>
+
+        <p style="text-align: center; margin-top: 1rem; font-size: 0.9rem;">
+            <a href="index.html" style="color: var(--text-anthracite);">← Retour à l'accueil</a>
+        </p>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            // L'appel POST API vers /api/auth/login devrait se faire ici
+            // Pour la démonstration rapide, on valide immédiatement si les mots de passe ne sont pas vides
+
+            localStorage.setItem('ymmo_session', 'token_agent');
+            window.location.href = 'dashboard_agent.html';
+        });
+    </script>
+</body>
+
+</html>

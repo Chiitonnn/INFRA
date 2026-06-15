@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Estimer un bien - Ymmo V2</title>
+    <link rel="stylesheet" href="css/main.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <header>
+        <a href="index.html" class="logo">YMMO</a>
+        <nav>
+            <a href="annonces.html">Acheter</a>
+            <a href="estimer.html" style="color:var(--accent-bleu); font-weight:bold;">Estimer son bien</a>
+            <a href="auth.html" class="btn btn-secondary">Connexion Pro</a>
+        </nav>
+    </header>
+
+    <main class="container" style="max-width: 800px; margin-top: 4rem;">
+        <h1 style="text-align:center; color: var(--accent-bleu);">Estimez la valeur de votre bien</h1>
+
+        <div
+            style="background-color: var(--bg-white); border: 1px solid var(--border-color); padding: 2rem; margin-top: 2rem;">
+
+            <form id="estimationWizard">
+
+                <!-- ETAPE 1 -->
+                <div class="wizard-step active" id="step1">
+                    <h3>Étape 1 : Le bien</h3>
+                    <label>Type de bien</label>
+                    <select name="type_bien" required>
+                        <option value="appartement">Appartement</option>
+                        <option value="maison">Maison</option>
+                        <option value="commerce">Commerce</option>
+                    </select>
+                    <label>Surface habitable (m²)</label>
+                    <input type="number" name="surface_m2" required>
+                    <label>Nombre de pièces</label>
+                    <input type="number" name="nb_pieces" required>
+                    <button type="button" class="btn btn-primary" onclick="nextStep(2)">Suivant</button>
+                </div>
+
+                <!-- ETAPE 2 -->
+                <div class="wizard-step" id="step2">
+                    <h3>Étape 2 : Localisation</h3>
+                    <label>Ville</label>
+                    <input type="text" name="ville" value="Aix-en-Provence" required>
+                    <label>Code Postal</label>
+                    <input type="number" name="code_postal" value="13100" required>
+                    <button type="button" class="btn btn-secondary" onclick="nextStep(1)">Précédent</button>
+                    <button type="button" class="btn btn-primary" onclick="nextStep(3)">Suivant</button>
+                </div>
+
+                <!-- ETAPE 3 -->
+                <div class="wizard-step" id="step3">
+                    <h3>Étape 3 : Caractéristiques supplémentaires</h3>
+                    <label>Étage (0 si RDC)</label>
+                    <input type="number" name="etage" value="1" required>
+                    <label>Année de construction</label>
+                    <input type="number" name="annee_construction" value="1990" required>
+                    <label>État Général (1 à 5)</label>
+                    <input type="number" name="etat_general" value="3" min="1" max="5" required>
+
+                    <div style="margin: 1rem 0;">
+                        <input type="checkbox" name="has_garage" id="g" style="width:auto;"><label for="g"> Possède un
+                            garage</label><br>
+                        <input type="checkbox" name="has_jardin" id="j" style="width:auto;"><label for="j"> Possède un
+                            jardin</label>
+                    </div>
+
+                    <button type="button" class="btn btn-secondary" onclick="nextStep(2)">Précédent</button>
+                    <button type="button" class="btn btn-primary" onclick="submitEstimation()">Obtenir l'estimation
+                        (IA)</button>
+                </div>
+
+                <!-- RESULTAT ETAPE 4 -->
+                <div class="wizard-step" id="step4" style="text-align:center;">
+                    <h2 style="color: var(--accent-bleu);">Résultat de l'Intelligence Artificielle</h2>
+                    <p style="font-size: 1.2rem;">Prix estimé pour ce bien :</p>
+                    <h1 style="color: var(--text-anthracite); font-size: 3rem;" id="resPrix">-- €</h1>
+                    <p>Fourchette : <span id="resRange"></span></p>
+                    <p>Score de confiance IA : <strong id="resConf"></strong>%</p>
+
+                    <a href="auth.html" class="btn btn-primary" style="margin-top:2rem;">Mettre en vente chez Ymmo</a>
+                </div>
+
+            </form>
+        </div>
+    </main>
+
+    <script>
+        function nextStep(step) {
+            document.querySelectorAll('.wizard-step').forEach(el => el.classList.remove('active'));
+            document.getElementById('step' + step).classList.add('active');
+        }
+
+        function submitEstimation() {
+            // Mapping du formulaire vers l'API ML
+            const formData = new FormData(document.getElementById('estimationWizard'));
+            const payload = Object.fromEntries(formData.entries());
+
+            // Boolean handling for checkboxes
+            payload.has_garage = !!payload.has_garage;
+            payload.has_jardin = !!payload.has_jardin;
+            payload.has_piscine = !!payload.has_piscine;
+
+            // Numbers
+            payload.surface_m2 = parseFloat(payload.surface_m2);
+            payload.nb_pieces = parseInt(payload.nb_pieces);
+            payload.etage = parseInt(payload.etage);
+            payload.annee_construction = parseInt(payload.annee_construction);
+            payload.etat_general = parseInt(payload.etat_general);
+            payload.code_postal = parseInt(payload.code_postal);
+
+            fetch('/api/ml/predict', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.erreur) {
+                        alert("Erreur de l'API ML : " + data.erreur);
+                        return;
+                    }
+                    nextStep(4);
+                    document.getElementById('resPrix').innerText = data.prix_estime.toLocaleString() + " €";
+                    document.getElementById('resRange').innerText = data.prix_min.toLocaleString() + " € - " + data.prix_max.toLocaleString() + " €";
+                    document.getElementById('resConf').innerText = data.score_confiance;
+                })
+                .catch(err => {
+                    alert("Le microservice IA est injoignable ou en cours d'entraînement.");
+                });
+        }
+    </script>
+</body>
+
+</html>

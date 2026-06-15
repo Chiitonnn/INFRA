@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Espace Agent - Ymmo V2</title>
+    <link rel="stylesheet" href="css/main.css">
+</head>
+
+<body>
+    <header style="background-color: var(--text-anthracite);">
+        <a href="index.html" class="logo" style="color:var(--bg-white);">YMMO <span
+                style="font-size:0.8rem; font-weight:normal;">Portail Agent</span></a>
+        <nav>
+            <a href="#" style="color:white;" onclick="logout()">Déconnexion</a>
+        </nav>
+    </header>
+
+    <main class="container" style="display:flex; gap: 2rem;">
+
+        <aside style="flex: 0 0 250px;">
+            <h3>Menu</h3>
+            <ul style="list-style: none; padding:0;">
+                <li style="margin-bottom: 1rem;"><a href="#"
+                        style="color:var(--accent-bleu); font-weight:bold; text-decoration:none;">Tableau de bord</a>
+                </li>
+                <li style="margin-bottom: 1rem;"><a href="#"
+                        style="color:var(--text-anthracite); text-decoration:none;">Gérer les annonces</a></li>
+                <li style="margin-bottom: 1rem;"><a href="#"
+                        style="color:var(--text-anthracite); text-decoration:none;">Contacts clients</a></li>
+            </ul>
+        </aside>
+
+        <section style="flex: 1;">
+            <h1>Heureux de vous revoir !</h1>
+
+            <div class="grid" style="margin-bottom: 3rem;">
+                <div class="card" style="padding:1rem; text-align:center;">
+                    <h2>34</h2>
+                    <p>Biens Actifs</p>
+                </div>
+                <div class="card" style="padding:1rem; text-align:center;">
+                    <h2>12</h2>
+                    <p>Nouveaux messages</p>
+                </div>
+            </div>
+
+            <h2>Analyse de marché IA (Générée par Scikit-Learn)</h2>
+            <div
+                style="background:var(--bg-white); border: 1px solid var(--border-color); padding: 1rem; margin-top:1rem;">
+                <img src="/api/ml/static/prix_type.png" alt="Graphique des prix généré par Pandas/Matplotlib"
+                    style="max-width: 100%;"
+                    onerror="this.src='https://placehold.co/800x400?text=Attente+génération+rapports+ML'">
+            </div>
+
+        </section>
+    </main>
+
+    <script>
+        // Check session basique
+        if (!localStorage.getItem('ymmo_session')) {
+            window.location.href = 'auth.html';
+        }
+
+        function logout() {
+            localStorage.removeItem('ymmo_session');
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+
+</html>
