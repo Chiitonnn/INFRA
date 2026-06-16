@@ -18,6 +18,14 @@ async function checkAuth() {
         if (!response.ok) throw new Error('Session invalide');
         const user = await response.json();
         localStorage.setItem('ymmo_user', JSON.stringify(user));
+        if (user.role === 'admin') {
+            window.location.href = 'admin.html';
+            return false;
+        }
+        if (user.role === 'client') {
+            window.location.href = 'biens.html';
+            return false;
+        }
         return true;
     } catch (error) {
         logout();

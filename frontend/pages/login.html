@@ -275,7 +275,7 @@
                     </form>
 
                     <div id="sessionActions" class="session-actions" style="display:none;">
-                        <button type="button" class="btn btn-primary btn-block" onclick="window.location.href='dashboard.html'">Aller au dashboard</button>
+                        <button type="button" class="btn btn-primary btn-block" id="sessionRedirectBtn" onclick="goToDashboard()">Aller au dashboard</button>
                         <button type="button" class="btn btn-outline btn-block" onclick="logout()">Se déconnecter</button>
                     </div>
                 </div>
@@ -338,6 +338,8 @@
                 document.getElementById('sessionActions').style.display = 'grid';
                 document.getElementById('authTitle').textContent = 'Déjà connecté';
                 document.getElementById('authSubtitle').textContent = `Session active pour ${user.email}.`;
+                document.getElementById('sessionRedirectBtn').textContent =
+                    user.role === 'admin' ? 'Aller à l\'administration' : 'Aller au dashboard';
             } catch (error) {
                 logout(false);
             }
@@ -363,7 +365,8 @@
                 localStorage.setItem('ymmo_token', data.access_token);
                 localStorage.setItem('ymmo_user', JSON.stringify(data.user));
                 showMessage('Connexion réussie. Redirection...', 'success');
-                setTimeout(() => window.location.href = 'dashboard.html', 700);
+                const redirect = data.user.role === 'admin' ? 'admin.html' : 'dashboard.html';
+                setTimeout(() => window.location.href = redirect, 700);
             } catch (error) {
                 showMessage(error.message, 'error');
             }
@@ -404,6 +407,11 @@
                 showMessage(error.message, 'error');
             }
         });
+
+        function goToDashboard() {
+            const user = JSON.parse(localStorage.getItem('ymmo_user') || '{}');
+            window.location.href = user.role === 'admin' ? 'admin.html' : 'dashboard.html';
+        }
 
         function logout(reload = true) {
             localStorage.removeItem('ymmo_token');

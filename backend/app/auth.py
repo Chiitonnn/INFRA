@@ -62,3 +62,16 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
     if user is None:
         raise credentials_exception
     return user
+
+def require_roles(*roles: str):
+    def checker(current_user: models.User = Depends(get_current_user)):
+        if current_user.role not in roles:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Accès non autorisé",
+            )
+        return current_user
+    return checker
+
+require_admin = require_roles("admin")
+require_agent_or_admin = require_roles("agent", "admin")

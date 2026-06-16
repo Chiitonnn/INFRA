@@ -1,14 +1,18 @@
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy.orm import Session
-import httpx
-import os
 
-from .database import engine, get_db
-from . import models, schemas, auth
-from .routes import biens, contacts, estimation, auth as auth_routes
+from .database import engine, SessionLocal
+from . import models
+from .routes import biens, contacts, estimation, auth as auth_routes, admin
+from .seed import seed_data
 
 models.Base.metadata.create_all(bind=engine)
+
+db = SessionLocal()
+try:
+    seed_data(db)
+finally:
+    db.close()
 
 app = FastAPI(title="Ymmo API", version="1.0")
 
@@ -19,11 +23,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Routes
 app.include_router(auth_routes.router, prefix="/auth", tags=["auth"])
 app.include_router(biens.router, prefix="/biens", tags=["biens"])
 app.include_router(contacts.router, prefix="/contacts", tags=["contacts"])
 app.include_router(estimation.router, prefix="/estimation", tags=["estimation"])
+app.include_router(admin.router, prefix="/admin", tags=["admin"])
 
 @app.get("/")
 def read_root():

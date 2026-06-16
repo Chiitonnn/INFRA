@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administration - Ymmo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        .admin-layout {
+            display: grid;
+            grid-template-columns: 240px 1fr;
+            min-height: calc(100vh - 120px);
+        }
+
+        .admin-sidebar {
+            background: #1D4E89;
+            color: white;
+            padding: 24px 0;
+        }
+
+        .admin-sidebar h2 {
+            font-size: 18px;
+            font-weight: 700;
+            padding: 0 20px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+            margin-bottom: 12px;
+        }
+
+        .admin-nav button {
+            display: block;
+            width: 100%;
+            text-align: left;
+            padding: 12px 20px;
+            border: none;
+            background: transparent;
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .admin-nav button:hover,
+        .admin-nav button.active {
+            background: rgba(255, 255, 255, 0.12);
+            color: white;
+        }
+
+        .admin-content {
+            padding: 32px;
+            background: #F7F6F3;
+        }
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .admin-header h1 {
+            font-size: 26px;
+            font-weight: 300;
+        }
+
+        .admin-header .user-info {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .panel {
+            display: none;
+        }
+
+        .panel.active {
+            display: block;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            text-align: center;
+        }
+
+        .stat-card .number {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1D4E89;
+        }
+
+        .stat-card .label {
+            font-size: 12px;
+            color: #888;
+            margin-top: 4px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            margin-bottom: 24px;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .card-header h3 {
+            font-size: 16px;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 10px 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .data-table th {
+            font-weight: 700;
+            color: #555;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+
+        .data-table tr:hover {
+            background: #fafafa;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .badge-admin { background: #fce4ec; color: #c2185b; }
+        .badge-agent { background: #e3f2fd; color: #1565c0; }
+        .badge-client { background: #f5f5f5; color: #666; }
+        .badge-nouveau { background: #e3f2fd; color: #1565c0; }
+        .badge-lu { background: #f5f5f5; color: #888; }
+        .badge-traite { background: #e8f5e9; color: #2e7d32; }
+        .badge-vente { background: #e8f5e9; color: #2e7d32; }
+        .badge-vendu { background: #fff3e0; color: #e65100; }
+
+        .btn-sm {
+            padding: 4px 10px;
+            font-size: 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 4px;
+        }
+
+        .btn-edit { background: #e3f2fd; color: #1565c0; }
+        .btn-delete { background: #ffebee; color: #c62828; }
+        .btn-status { background: #f5f5f5; color: #555; }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 200;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: white;
+            border-radius: 8px;
+            padding: 24px;
+            width: 90%;
+            max-width: 520px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal h3 {
+            margin-bottom: 16px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .form-group {
+            margin-bottom: 12px;
+        }
+
+        .form-group.full {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            color: #555;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 16px;
+            justify-content: flex-end;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            padding: 12px 20px;
+            border-radius: 6px;
+            color: white;
+            font-size: 14px;
+            z-index: 300;
+            display: none;
+        }
+
+        .toast.success { background: #2e7d32; display: block; }
+        .toast.error { background: #c62828; display: block; }
+
+        .table-scroll {
+            overflow-x: auto;
+        }
+
+        @media (max-width: 900px) {
+            .admin-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .admin-sidebar {
+                padding: 16px 0;
+            }
+
+            .admin-nav {
+                display: flex;
+                overflow-x: auto;
+                padding: 0 12px;
+            }
+
+            .admin-nav button {
+                width: auto;
+                white-space: nowrap;
+                border-radius: 6px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="container">
+                <div class="logo"><a href="/">Ymmo</a></div>
+                <div class="nav-links">
+                    <a href="biens.html">Biens</a>
+                    <a href="estimation.html">Estimer</a>
+                    <a href="dashboard.html">Dashboard Agent</a>
+                    <a href="admin.html" class="active">Administration</a>
+                    <button class="btn btn-outline" onclick="logout()">Déconnexion</button>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="admin-layout">
+        <aside class="admin-sidebar">
+            <h2>⚙️ Administration</h2>
+            <nav class="admin-nav">
+                <button class="active" data-panel="overview" onclick="showPanel('overview')">Vue d'ensemble</button>
+                <button data-panel="users" onclick="showPanel('users')">Utilisateurs</button>
+                <button data-panel="agences" onclick="showPanel('agences')">Agences</button>
+                <button data-panel="biens" onclick="showPanel('biens')">Biens</button>
+                <button data-panel="contacts" onclick="showPanel('contacts')">Contacts</button>
+                <button data-panel="estimations" onclick="showPanel('estimations')">Estimations</button>
+            </nav>
+        </aside>
+
+        <main class="admin-content">
+            <div class="admin-header">
+                <div>
+                    <h1 id="panelTitle">Vue d'ensemble</h1>
+                    <div class="user-info" id="userInfo">Chargement...</div>
+                </div>
+            </div>
+
+            <section id="panel-overview" class="panel active">
+                <div class="stats-grid" id="statsGrid"></div>
+            </section>
+
+            <section id="panel-users" class="panel">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Utilisateurs</h3>
+                        <button class="btn btn-primary" onclick="openUserModal()">+ Ajouter</button>
+                    </div>
+                    <div class="table-scroll">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Nom</th>
+                                    <th>Email</th>
+                                    <th>Rôle</th>
+                                    <th>Agence</th>
+                                    <th>Inscription</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="usersTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <section id="panel-agences" class="panel">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Agences (12 + siège)</h3>
+                        <button class="btn btn-primary" onclick="openAgenceModal()">+ Ajouter</button>
+                    </div>
+                    <div class="table-scroll">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Nom</th>
+                                    <th>Ville</th>
+                                    <th>Adresse</th>
+                                    <th>Téléphone</th>
+                                    <th>Email</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="agencesTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <section id="panel-biens" class="panel">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Biens immobiliers</h3>
+                    </div>
+                    <div class="table-scroll">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Titre</th>
+                                    <th>Ville</th>
+                                    <th>Prix</th>
+                                    <th>Type</th>
+                                    <th>Statut</th>
+                                    <th>Vues</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="biensTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <section id="panel-contacts" class="panel">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Messages de contact</h3>
+                    </div>
+                    <div class="table-scroll">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Nom</th>
+                                    <th>Email</th>
+                                    <th>Bien #</th>
+                                    <th>Message</th>
+                                    <th>Statut</th>
+                                    <th>Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="contactsTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <section id="panel-estimations" class="panel">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Historique des estimations ML</h3>
+                    </div>
+                    <div class="table-scroll">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Ville</th>
+                                    <th>Type</th>
+                                    <th>Surface</th>
+                                    <th>Pièces</th>
+                                    <th>Prix estimé</th>
+                                    <th>Fourchette</th>
+                                    <th>Confiance</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody id="estimationsTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal" id="modalContent"></div>
+    </div>
+    <div class="toast" id="toast"></div>
+
+    <script src="../js/config.js"></script>
+    <script src="../js/admin.js"></script>
+</body>
+
+</html>

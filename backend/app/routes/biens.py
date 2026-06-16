@@ -66,3 +66,42 @@ def create_bien(bien: schemas.BienCreate, db: Session = Depends(get_db), current
     db.commit()
     db.refresh(db_bien)
     return db_bien
+
+@router.put("/{bien_id}", response_model=schemas.Bien)
+def update_bien(
+    bien_id: int,
+    data: schemas.BienUpdate,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(auth.get_current_user),
+):
+    if current_user.role not in ["agent", "admin"]:
+        raise HTTPException(status_code=403, detail="Accès non autorisé")
+    bien = db.query(models.Bien).filter(models.Bien.id == bien_id).first()
+    if not bien:
+        raise HTTPException(status_code=404, detail="Bien non trouvé")
+    if current_user.role == "agent" and bien.agent_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Vous ne pouvez modifier que vos biens")
+    for field, value in data.dict(exclude_unset=True).items():
+        setattr(bien, field, value)
+    db.commit()
+    db.refresh(bien)
+    return bien
+
+@router.delete("/{bien_id}")
+def delete_bien(
+    bien_id: int,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(auth.get_current_user),
+):
+    if current_user.role not in ["agent", "admin"]:
+        raise HTTPException(status_code=403, detail="Accès non autorisé")
+    bien = db.query(models.Bien).filter(models.Bien.id == bien_id).first()
+    if not bien:
+        raise HTTPException(status_code=404, detail="Bien non trouvé")
+    if current_user.role == "agent" and bien.agent_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Vous ne pouvez supprimer que vos biens")
+    db.query(models.Contact).filter(models.Contact.bien_id == bien_id).delete()
+    db.query(models.Photo).filter(models.Photo.bien_id == bien_id).delete()
+    db.delete(bien)
+    db.commit()
+    return {"message": "Bien supprimé"}
