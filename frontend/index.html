@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ymmo - Immobilier</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="container">
+                <div class="logo">
+                    <a href="/">Ymmo</a>
+                </div>
+                <div class="nav-links">
+                    <a href="pages/biens.html">Biens</a>
+                    <a href="pages/estimation.html">Estimer</a>
+                    <a href="pages/login.html">Connexion</a>
+                    <a href="pages/dashboard.html" class="btn btn-outline">Dashboard</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="container">
+                <h1>Trouvez votre bien immobilier</h1>
+                <p class="subtitle">Achat, vente, location — Ymmo vous accompagne</p>
+                <form class="search-bar" action="pages/biens.html" method="GET">
+                    <input type="text" name="ville" placeholder="Ville, code postal..." required>
+                    <div class="search-group">
+                        <input type="number" name="prix_min" placeholder="Budget min">
+                        <input type="number" name="prix_max" placeholder="Budget max">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Rechercher</button>
+                </form>
+            </div>
+        </section>
+
+        <section class="features">
+            <div class="container">
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">🏠</div>
+                        <h3>Biens mis en avant</h3>
+                        <p>Découvrez nos meilleures offres</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">📊</div>
+                        <h3>Estimation IA</h3>
+                        <p>Obtenez une estimation en 2 minutes</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🤝</div>
+                        <h3>12 agences</h3>
+                        <p>Présents partout en France</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="stats">
+            <div class="container">
+                <div class="stats-grid">
+                    <div><span class="stat-number" id="biens-count">0</span><span>Biens disponibles</span></div>
+                    <div><span class="stat-number">12</span><span>Agences</span></div>
+                    <div><span class="stat-number" id="transactions-count">0</span><span>Transactions</span></div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 Ymmo - Groupe immobilier</p>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+</body>
+
+</html>

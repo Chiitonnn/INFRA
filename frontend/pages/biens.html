@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biens - Ymmo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        .page-header {
+            background: white;
+            padding: 32px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .page-header h1 {
+            font-size: 28px;
+            font-weight: 300;
+        }
+
+        .page-header .subtitle {
+            color: #666;
+        }
+
+        .catalog {
+            padding: 40px 0;
+        }
+
+        .catalog-grid {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 32px;
+        }
+
+        .filters {
+            background: white;
+            padding: 24px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            position: sticky;
+            top: 80px;
+            height: fit-content;
+        }
+
+        .filters h3 {
+            font-size: 16px;
+            margin-bottom: 16px;
+        }
+
+        .filter-group {
+            margin-bottom: 16px;
+        }
+
+        .filter-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: #555;
+        }
+
+        .filter-group input,
+        .filter-group select {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .filter-group .range-inputs {
+            display: flex;
+            gap: 8px;
+        }
+
+        .filter-group .range-inputs input {
+            width: 50%;
+        }
+
+        .filter-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .filter-actions .btn {
+            flex: 1;
+            padding: 8px;
+            font-size: 13px;
+        }
+
+        .biens-list {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        .bien-card {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+        }
+
+        .bien-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .bien-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            background: #f0f0f0;
+        }
+
+        .bien-card .content {
+            padding: 16px;
+        }
+
+        .bien-card .price {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1D4E89;
+        }
+
+        .bien-card .title {
+            font-size: 16px;
+            margin: 4px 0;
+            color: #2C2C2A;
+        }
+
+        .bien-card .location {
+            font-size: 14px;
+            color: #777;
+        }
+
+        .bien-card .details {
+            display: flex;
+            gap: 16px;
+            margin-top: 8px;
+            font-size: 13px;
+            color: #555;
+        }
+
+        .bien-card .badge {
+            display: inline-block;
+            padding: 2px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .badge.vente {
+            background: #e3f2fd;
+            color: #1565c0;
+        }
+
+        .badge.location {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .badge.vendu {
+            background: #f5f5f5;
+            color: #888;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 32px;
+        }
+
+        .pagination button {
+            padding: 8px 16px;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .pagination button.active {
+            background: #1D4E89;
+            color: white;
+            border-color: #1D4E89;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 60px 0;
+            color: #888;
+        }
+
+        .no-results .icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        @media (max-width: 1024px) {
+            .catalog-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .biens-list {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .biens-list {
+                grid-template-columns: 1fr;
+            }
+
+            .filters {
+                position: static;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="container">
+                <div class="logo"><a href="/">Ymmo</a></div>
+                <div class="nav-links">
+                    <a href="biens.html" class="active">Biens</a>
+                    <a href="estimation.html">Estimer</a>
+                    <a href="login.html">Connexion</a>
+                    <a href="dashboard.html" class="btn btn-outline">Dashboard</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <div class="page-header">
+            <div class="container">
+                <h1>Nos biens immobiliers</h1>
+                <p class="subtitle">Découvrez notre sélection de biens à vendre ou à louer</p>
+            </div>
+        </div>
+
+        <section class="catalog">
+            <div class="container">
+                <div class="catalog-grid">
+                    <aside class="filters">
+                        <h3>Filtres</h3>
+                        <div class="filter-group">
+                            <label>Type</label>
+                            <select id="filter_type">
+                                <option value="">Tous</option>
+                                <option value="maison">Maison</option>
+                                <option value="appartement">Appartement</option>
+                                <option value="commerce">Commerce</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>Ville</label>
+                            <input type="text" id="filter_ville" placeholder="Ex: Aix-en-Provence">
+                        </div>
+                        <div class="filter-group">
+                            <label>Budget</label>
+                            <div class="range-inputs">
+                                <input type="number" id="filter_prix_min" placeholder="Min" step="10000">
+                                <input type="number" id="filter_prix_max" placeholder="Max" step="10000">
+                            </div>
+                        </div>
+                        <div class="filter-group">
+                            <label>Surface</label>
+                            <div class="range-inputs">
+                                <input type="number" id="filter_surface_min" placeholder="Min" step="10">
+                                <input type="number" id="filter_surface_max" placeholder="Max" step="10">
+                            </div>
+                        </div>
+                        <div class="filter-actions">
+                            <button class="btn btn-primary" onclick="applyFilters()">Filtrer</button>
+                            <button class="btn btn-outline" onclick="resetFilters()">Réinitialiser</button>
+                        </div>
+                    </aside>
+
+                    <div>
+                        <div id="biensContainer" class="biens-list">
+                            <div class="no-results">Chargement...</div>
+                        </div>
+                        <div class="pagination" id="pagination"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 Ymmo - Groupe immobilier</p>
+        </div>
+    </footer>
+
+    <script src="../js/biens.js"></script>
+</body>
+
+</html>

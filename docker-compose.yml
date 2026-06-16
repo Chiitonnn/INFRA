@@ -1,50 +1,57 @@
+version: '3.8'
+
 services:
-  db_ymmov2:
-    image: mysql:8.0
-    container_name: db_ymmov2_mysql
-    restart: always
+  db:
+    image: mariadb:10.11
+    container_name: ymmo_db
     environment:
-      MYSQL_ROOT_PASSWORD: myrootpassword
-      MYSQL_DATABASE: ymmov2_db
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: ymmo_db
       MYSQL_USER: ymmo_user
-      MYSQL_PASSWORD: ymmo_password
-    volumes:
-      - db_ymmov2_data:/var/lib/mysql
+      MYSQL_PASSWORD: ymmo_pass
     ports:
       - "127.0.0.1:3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    restart: unless-stopped
 
-  ml_ymmov2:
-    build: ./ml_service
-    container_name: ml_ymmov2_flask
-    restart: always
+  ml:
+    build: ./ml-service
+    container_name: ymmo_ml
     ports:
       - "127.0.0.1:5000:5000"
+    volumes:
+      - ./ml-service:/app
+    command: uvicorn app:app --host 0.0.0.0 --port 5000 --reload
+    restart: unless-stopped
 
-  backend_ymmov2:
+  backend:
     build: ./backend
-    container_name: backend_ymmov2_flask
-    restart: always
+    container_name: ymmo_backend
     environment:
-      - DATABASE_URL=mysql+pymysql://ymmo_user:ymmo_password@db_ymmov2:3306/ymmov2_db
-      - ML_API_URL=http://ml_ymmov2:5000
-      - SECRET_KEY=clef_super_secrete_b2
-    depends_on:
-      - db_ymmov2
+      DATABASE_URL: mysql+pymysql://ymmo_user:ymmo_pass@db:3306/ymmo_db
+      ML_URL: http://ml:5000
     ports:
       - "127.0.0.1:8000:8000"
+    volumes:
+      - ./backend:/app
+    depends_on:
+      - db
+      - ml
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    restart: unless-stopped
 
-  web_ymmov2:
+  nginx:
     image: nginx:alpine
-    container_name: web_ymmov2_nginx
-    restart: always
+    container_name: ymmo_nginx
     ports:
       - "80:80"
     volumes:
-      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
-      - ./frontend/public:/usr/share/nginx/html
+      - ./frontend:/usr/share/nginx/html
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
     depends_on:
-      - backend_ymmov2
-      - ml_ymmov2
+      - backend
+    restart: unless-stopped
 
 volumes:
-  db_ymmov2_data:
+  db_data:
