@@ -6,7 +6,7 @@ import os
 
 from .database import engine, get_db
 from . import models, schemas, auth
-from .routes import biens, estimation, auth as auth_routes
+from .routes import biens, contacts, estimation, auth as auth_routes
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -22,6 +22,7 @@ app.add_middleware(
 # Routes
 app.include_router(auth_routes.router, prefix="/auth", tags=["auth"])
 app.include_router(biens.router, prefix="/biens", tags=["biens"])
+app.include_router(contacts.router, prefix="/contacts", tags=["contacts"])
 app.include_router(estimation.router, prefix="/estimation", tags=["estimation"])
 
 @app.get("/")

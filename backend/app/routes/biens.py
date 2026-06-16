@@ -46,7 +46,22 @@ def get_bien(bien_id: int, db: Session = Depends(get_db)):
 def create_bien(bien: schemas.BienCreate, db: Session = Depends(get_db), current_user: models.User = Depends(auth.get_current_user)):
     if current_user.role not in ["agent", "admin"]:
         raise HTTPException(status_code=403, detail="Seul un agent peut créer un bien")
-    db_bien = models.Bien(**bien.dict())
+    bien_data = bien.dict()
+    agence = db.query(models.Agence).filter(models.Agence.id == bien_data["agence_id"]).first()
+    if not agence:
+        agence = models.Agence(
+            nom="Ymmo",
+            ville=bien_data["ville"],
+            adresse=bien_data["adresse"],
+            telephone="",
+            email_contact=current_user.email
+        )
+        db.add(agence)
+        db.commit()
+        db.refresh(agence)
+        bien_data["agence_id"] = agence.id
+    bien_data["agent_id"] = current_user.id
+    db_bien = models.Bien(**bien_data)
     db.add(db_bien)
     db.commit()
     db.refresh(db_bien)

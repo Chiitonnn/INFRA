@@ -38,5 +38,9 @@ async def predict_estimation(data: schemas.EstimationRequest, db: Session = Depe
             db.commit()
             
             return result
+    except httpx.ConnectError:
+        raise HTTPException(status_code=503, detail="Service d'estimation indisponible")
+    except httpx.HTTPStatusError as e:
+        raise HTTPException(status_code=502, detail=f"Erreur du service d'estimation: {e.response.text}")
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Erreur du service ML: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Erreur lors de l'estimation: {str(e)}")

@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from typing import Optional, Union
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 from fastapi import Depends, HTTPException, status
@@ -9,7 +10,7 @@ from . import models
 
 SECRET_KEY = "votre-cle-secrete-a-changer-en-production"
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24  # 24h
+ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
@@ -51,10 +52,11 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
     )
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        user_id: int = payload.get("sub")
+        user_id = payload.get("sub")
         if user_id is None:
             raise credentials_exception
-    except JWTError:
+        user_id = int(user_id)
+    except (JWTError, ValueError):
         raise credentials_exception
     user = db.query(models.User).filter(models.User.id == user_id).first()
     if user is None:

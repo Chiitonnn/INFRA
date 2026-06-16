@@ -1,4 +1,3 @@
-const API_URL = 'http://192.168.10.10/api';
 let currentPage = 1;
 const perPage = 8;
 let totalPages = 1;

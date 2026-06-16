@@ -1,4 +1,3 @@
-const API_URL = 'http://192.168.10.10/api';
 let token = localStorage.getItem('ymmo_token');
 
 function getHeaders() {
@@ -13,7 +12,17 @@ async function checkAuth() {
         window.location.href = 'login.html';
         return false;
     }
-    return true;
+
+    try {
+        const response = await fetch(`${API_URL}/auth/me`, { headers: getHeaders() });
+        if (!response.ok) throw new Error('Session invalide');
+        const user = await response.json();
+        localStorage.setItem('ymmo_user', JSON.stringify(user));
+        return true;
+    } catch (error) {
+        logout();
+        return false;
+    }
 }
 
 async function loadDashboard() {
@@ -26,7 +35,7 @@ async function loadDashboard() {
 
         // Charger les contacts
         const contactsRes = await fetch(`${API_URL}/contacts/`, { headers: getHeaders() });
-        const contacts = await contactsRes.json();
+        const contacts = contactsRes.ok ? await contactsRes.json() : [];
 
         updateStats(biens, contacts);
         renderBiens(biens);
@@ -106,10 +115,11 @@ async function submitBien() {
         nb_pieces: parseInt(document.getElementById('add_pieces').value) || 0,
         code_postal: document.getElementById('add_code_postal').value,
         description: document.getElementById('add_description').value,
+        adresse: `${document.getElementById('add_ville').value} ${document.getElementById('add_code_postal').value}`.trim(),
         agence_id: 1
     };
 
-    if (!data.titre || !data.ville || !data.prix || !data.surface_m2) {
+    if (!data.titre || !data.ville || !data.prix || !data.surface_m2 || !data.code_postal) {
         document.getElementById('addResult').textContent = '⚠️ Veuillez remplir tous les champs obligatoires.';
         return;
     }

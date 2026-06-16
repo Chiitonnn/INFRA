@@ -26,6 +26,7 @@ class User(UserBase):
 class Token(BaseModel):
     access_token: str
     token_type: str
+    user: User
 
 class BienBase(BaseModel):
     titre: str
@@ -68,6 +69,8 @@ class EstimationRequest(BaseModel):
     type_bien: str
     ville: str
     code_postal: str
+    etage: Optional[int] = 0
+    annee_construction: Optional[int] = 2000
     etat_general: Optional[int] = 3
     has_garage: bool = False
     has_jardin: bool = False
@@ -86,3 +89,12 @@ class ContactRequest(BaseModel):
     email: EmailStr
     telephone: str
     message: str
+
+class Contact(ContactRequest):
+    id: int
+    user_id: Optional[int] = None
+    statut: str
+    date_envoi: datetime
+
+    class Config:
+        orm_mode = True

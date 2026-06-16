@@ -154,8 +154,15 @@ class PriceEstimator:
             raise ValueError("Le modèle doit être entraîné avant de faire des prédictions")
         
         # Préparer les données
-        type_encoded = self.le_type.transform([features_dict["type_bien"]])[0]
-        ville_encoded = self.le_ville.transform([features_dict["ville"]])[0]
+        type_bien = features_dict["type_bien"]
+        ville = features_dict["ville"]
+        if type_bien not in self.le_type.classes_:
+            type_bien = "appartement"
+        if ville not in self.le_ville.classes_:
+            ville = "Marseille" if "Marseille" in self.le_ville.classes_ else self.le_ville.classes_[0]
+
+        type_encoded = self.le_type.transform([type_bien])[0]
+        ville_encoded = self.le_ville.transform([ville])[0]
         
         input_data = np.array([[
             features_dict["surface_m2"],

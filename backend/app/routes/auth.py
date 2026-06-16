@@ -8,6 +8,8 @@ router = APIRouter()
 
 @router.post("/register", response_model=schemas.User)
 def register(user: schemas.UserCreate, db: Session = Depends(get_db)):
+    if len(user.mot_de_passe) < 8:
+        raise HTTPException(status_code=400, detail="Le mot de passe doit contenir au moins 8 caractÃ¨res")
     existing_user = db.query(models.User).filter(models.User.email == user.email).first()
     if existing_user:
         raise HTTPException(status_code=400, detail="Email déjà utilisé")
@@ -37,4 +39,8 @@ def login(user_data: schemas.UserLogin, db: Session = Depends(get_db)):
     access_token = auth.create_access_token(
         data={"sub": str(user.id)}, expires_delta=access_token_expires
     )
-    return {"access_token": access_token, "token_type": "bearer"}
+    return {"access_token": access_token, "token_type": "bearer", "user": user}
+
+@router.get("/me", response_model=schemas.User)
+def me(current_user: models.User = Depends(auth.get_current_user)):
+    return current_user
