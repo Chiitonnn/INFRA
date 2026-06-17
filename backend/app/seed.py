@@ -41,3 +41,24 @@ def seed_data(db: Session):
         )
         db.add(admin)
         db.commit()
+
+    if db.query(models.Bien).count() == 0:
+        siege = db.query(models.Agence).filter(models.Agence.nom == "Ymmo Siège").first()
+        admin_user = db.query(models.User).filter(models.User.email == ADMIN_EMAIL).first()
+        bien = models.Bien(
+            titre="Appartement Test",
+            description="Ceci est un appartement test intégré par défaut.",
+            type="appartement",
+            statut="vente",
+            prix=250000.0,
+            surface_m2=75.0,
+            nb_pieces=3,
+            nb_chambres=2,
+            ville="Aix-en-Provence",
+            code_postal="13100",
+            adresse="12 Cours Mirabeau",
+            agence_id=siege.id if siege else None,
+            agent_id=admin_user.id if admin_user else None
+        )
+        db.add(bien)
+        db.commit()

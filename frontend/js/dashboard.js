@@ -19,12 +19,10 @@ async function checkAuth() {
         const user = await response.json();
         localStorage.setItem('ymmo_user', JSON.stringify(user));
         if (user.role === 'admin') {
-            window.location.href = 'admin.html';
-            return false;
+            // Admin can view the agent dashboard, don't redirect
         }
         if (user.role === 'client') {
-            window.location.href = 'biens.html';
-            return false;
+            // Client can view the dashboard, don't redirect
         }
         return true;
     } catch (error) {

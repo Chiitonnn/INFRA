@@ -36,9 +36,15 @@ function displayBiens(biens) {
         return;
     }
 
-    container.innerHTML = biens.map(b => `
+    container.innerHTML = biens.map(b => {
+        const isAppartementTest = b.titre && b.titre.toLowerCase().includes('appartement test');
+        const imgSrc = isAppartementTest 
+            ? 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=400&q=80'
+            : `https://picsum.photos/seed/${b.id}/400/300`;
+            
+        return `
         <div class="bien-card" onclick="window.location.href='bien.html?id=${b.id}'">
-            <img src="https://picsum.photos/seed/${b.id}/400/300" alt="${b.titre || 'Bien'}">
+            <img src="${imgSrc}" alt="${b.titre || 'Bien'}">
             <div class="content">
                 <div class="price">${b.prix?.toLocaleString('fr-FR') || '0'} €</div>
                 <div class="title">${b.titre || 'Sans titre'}</div>
@@ -50,7 +56,8 @@ function displayBiens(biens) {
                 </div>
             </div>
         </div>
-    `).join('');
+    `;
+    }).join('');
 }
 
 function updatePagination(count) {
@@ -93,4 +100,22 @@ function resetFilters() {
 }
 
 // Charger au démarrage
-loadBiens();
+function getInitialParams() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const params = {};
+    if (urlParams.has('ville')) {
+        params.ville = urlParams.get('ville');
+        document.getElementById('filter_ville').value = params.ville;
+    }
+    if (urlParams.has('prix_min') && urlParams.get('prix_min')) {
+        params.prix_min = urlParams.get('prix_min');
+        document.getElementById('filter_prix_min').value = params.prix_min;
+    }
+    if (urlParams.has('prix_max') && urlParams.get('prix_max')) {
+        params.prix_max = urlParams.get('prix_max');
+        document.getElementById('filter_prix_max').value = params.prix_max;
+    }
+    return params;
+}
+
+loadBiens(getInitialParams());

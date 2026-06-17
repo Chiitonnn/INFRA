@@ -320,11 +320,24 @@
             document.getElementById('bienRef').textContent = `YMMO-${String(bien.id).padStart(6, '0')}`;
 
             // Galerie
+            const isAppartementTest = bien.titre && bien.titre.toLowerCase().includes('appartement test');
+            const mainImg = isAppartementTest 
+                ? 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=800&q=80' 
+                : `https://picsum.photos/seed/${bien.id}/800/400`;
+            const thumbImgs = isAppartementTest 
+                ? [
+                    'https://images.unsplash.com/photo-1502672260266-1c1de2c1bbf2?auto=format&fit=crop&w=400&q=80',
+                    'https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&w=400&q=80',
+                    'https://images.unsplash.com/photo-1493809842364-78817add7ffb?auto=format&fit=crop&w=400&q=80',
+                    'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=400&q=80'
+                  ]
+                : [1, 2, 3, 4].map(i => `https://picsum.photos/seed/${bien.id}${i}/400/200`);
+
             const galleryHtml = `
-                <img src="https://picsum.photos/seed/${bien.id}/800/400" alt="${bien.titre}">
+                <img src="${mainImg}" alt="${bien.titre}">
                 <div class="thumbnails">
-                    ${[1, 2, 3, 4].map(i => `
-                        <img src="https://picsum.photos/seed/${bien.id}${i}/400/200" alt="Photo ${i}">
+                    ${thumbImgs.map((src, i) => `
+                        <img src="${src}" alt="Photo ${i + 1}">
                     `).join('')}
                 </div>
             `;
