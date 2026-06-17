@@ -4,175 +4,466 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Estimation - Ymmo</title>
-    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+    <title>Estimation IA — Ymmo</title>
+    <meta name="description" content="Estimez gratuitement la valeur de votre bien immobilier grâce à l'intelligence artificielle Ymmo.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../css/style.css">
     <style>
-        .estimation-container {
-            max-width: 760px;
-            margin: 40px auto;
-            padding: 40px;
+        body {
+            background: #f0f2f5;
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Hero banner */
+        .estim-hero {
+            background: linear-gradient(135deg, #1D4E89 0%, #1a3d6e 60%, #2a5858 100%);
+            color: white;
+            padding: 56px 0 80px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .estim-hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        .estim-hero h1 {
+            font-size: 42px;
+            font-weight: 800;
+            margin-bottom: 12px;
+            position: relative;
+        }
+
+        .estim-hero p {
+            font-size: 18px;
+            color: rgba(255,255,255,.8);
+            position: relative;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .estim-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255,255,255,.15);
+            border: 1px solid rgba(255,255,255,.25);
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        /* Card principale */
+        .estim-card {
             background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+            border-radius: 20px;
+            box-shadow: 0 8px 40px rgba(0,0,0,.12);
+            max-width: 680px;
+            margin: -48px auto 64px;
+            position: relative;
+            overflow: hidden;
         }
 
-        .estimation-container h1 {
-            font-size: 30px;
-            font-weight: 300;
-            margin-bottom: 8px;
-            text-align: center;
-        }
-
-        .estimation-container .subtitle {
-            text-align: center;
-            color: #666;
-            margin-bottom: 32px;
-        }
-
+        /* Steps indicator */
         .step-indicator {
             display: flex;
-            justify-content: center;
-            gap: 8px;
-            margin-bottom: 32px;
+            padding: 24px 32px 0;
+            gap: 0;
+            position: relative;
+        }
+
+        .step-indicator::before {
+            content: '';
+            position: absolute;
+            top: 36px;
+            left: calc(32px + 16px);
+            right: calc(32px + 16px);
+            height: 2px;
+            background: #e5e7eb;
+            z-index: 0;
+        }
+
+        .step-dot-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+            position: relative;
+            z-index: 1;
         }
 
         .step-dot {
-            width: 12px;
-            height: 12px;
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
-            background: #ddd;
+            background: #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 700;
+            color: #9ca3af;
+            transition: all .3s;
+            border: 2px solid #e5e7eb;
         }
 
-        .step-dot.active,
-        .step-dot.done {
+        .step-dot.active {
             background: #1D4E89;
+            border-color: #1D4E89;
+            color: white;
+            box-shadow: 0 0 0 4px rgba(29,78,137,.15);
         }
 
+        .step-dot.done {
+            background: #059669;
+            border-color: #059669;
+            color: white;
+        }
+
+        .step-dot-label {
+            font-size: 11px;
+            color: #9ca3af;
+            margin-top: 6px;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .step-dot.active + .step-dot-label,
+        .step-dot.done + .step-dot-label { color: #374151; }
+
+        /* Formulaire steps */
         .form-step {
             display: none;
+            padding: 28px 32px 32px;
         }
 
-        .form-step.active {
-            display: block;
+        .form-step.active { display: block; }
+
+        .form-step h3 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: #111827;
+        }
+
+        .step-subtitle {
+            font-size: 14px;
+            color: #6b7280;
+            margin-bottom: 24px;
         }
 
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 18px;
         }
 
         .form-group label {
             display: block;
-            font-weight: 700;
+            font-size: 13px;
+            font-weight: 600;
+            color: #374151;
             margin-bottom: 6px;
-            font-size: 14px;
         }
 
         .form-group input,
         .form-group select {
             width: 100%;
-            padding: 11px 12px;
-            border: 1px solid #d8dde1;
-            border-radius: 6px;
+            padding: 11px 14px;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 10px;
             font-size: 15px;
-            background: #fbfcfd;
+            background: #fafafa;
+            transition: all .2s;
+            color: #111827;
+            box-sizing: border-box;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #1D4E89;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(29,78,137,.1);
         }
 
         .form-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 16px;
+            gap: 14px;
         }
 
-        .checks {
+        /* Type cards */
+        .type-cards {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 12px;
+            margin-bottom: 24px;
         }
 
-        .checks label {
+        .type-card {
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 16px 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all .2s;
+            background: white;
+        }
+
+        .type-card:hover { border-color: #1D4E89; background: #eff6ff; }
+
+        .type-card.selected {
+            border-color: #1D4E89;
+            background: #eff6ff;
+            box-shadow: 0 0 0 3px rgba(29,78,137,.1);
+        }
+
+        .type-card .type-icon { font-size: 28px; margin-bottom: 6px; }
+        .type-card .type-name { font-size: 13px; font-weight: 600; color: #374151; }
+
+        /* Checkbox options */
+        .option-checks {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 24px;
+        }
+
+        .option-check {
             display: flex;
             align-items: center;
             gap: 8px;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 10px;
             padding: 10px 12px;
-            border: 1px solid #d8dde1;
-            border-radius: 6px;
-            background: #fbfcfd;
-            font-weight: 700;
+            cursor: pointer;
+            transition: all .2s;
         }
 
-        .checks input {
-            width: auto;
+        .option-check:has(input:checked) {
+            border-color: #1D4E89;
+            background: #eff6ff;
         }
 
+        .option-check input { accent-color: #1D4E89; cursor: pointer; }
+        .option-check span { font-size: 13px; font-weight: 600; color: #374151; }
+
+        /* Nav buttons */
         .btn-group {
             display: flex;
-            gap: 12px;
-            margin-top: 24px;
+            gap: 10px;
+            margin-top: 8px;
         }
 
-        .btn-group .btn {
-            flex: 1;
-            text-align: center;
+        .btn-group .btn { flex: 1; padding: 13px; font-size: 15px; border-radius: 10px; font-weight: 600; }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #1D4E89, #1a3d6e);
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: all .2s;
         }
 
-        .result-box {
-            background: #F7F6F3;
-            padding: 32px;
+        .btn-primary:hover { opacity: .9; transform: translateY(-1px); }
+
+        .btn-outline {
+            background: white;
+            border: 1.5px solid #e5e7eb;
+            color: #6b7280;
+            cursor: pointer;
+            transition: all .2s;
+        }
+
+        .btn-outline:hover { border-color: #9ca3af; color: #374151; }
+
+        .form-error {
+            color: #dc2626;
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 12px;
+            padding: 8px 12px;
+            background: #fef2f2;
             border-radius: 8px;
+            border: 1px solid #fecaca;
+        }
+
+        /* Loading */
+        .result-loading {
             text-align: center;
-            margin-top: 16px;
+            padding: 48px 24px;
         }
 
-        .result-box .price {
-            font-size: 44px;
-            font-weight: 700;
-            color: #1D4E89;
+        .spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid #e5e7eb;
+            border-top-color: #1D4E89;
+            border-radius: 50%;
+            animation: spin .8s linear infinite;
+            margin: 0 auto 20px;
         }
 
-        .result-box .range {
-            color: #666;
-            font-size: 18px;
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .result-loading p { font-size: 16px; font-weight: 600; color: #374151; }
+        .result-loading small { font-size: 13px; color: #9ca3af; }
+
+        /* Result */
+        .result-hero {
+            background: linear-gradient(135deg, #1D4E89, #2a5858);
+            color: white;
+            padding: 32px;
+            border-radius: 14px;
+            text-align: center;
+            margin-bottom: 20px;
         }
 
-        .result-box .details {
-            margin-top: 16px;
+        .result-type-badge {
+            display: inline-block;
+            background: rgba(255,255,255,.2);
+            border: 1px solid rgba(255,255,255,.3);
+            padding: 3px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+        }
+
+        .result-location { font-size: 14px; color: rgba(255,255,255,.75); margin-bottom: 16px; }
+
+        .result-price {
+            font-size: 52px;
+            font-weight: 800;
+            line-height: 1;
+            margin-bottom: 8px;
+        }
+
+        .result-range { font-size: 15px; color: rgba(255,255,255,.75); }
+
+        /* Detail cards */
+        .result-details {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 16px;
+            gap: 12px;
+            margin-bottom: 20px;
         }
 
-        .result-box .details>div {
-            background: white;
+        .detail-card {
+            background: #f8fafc;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
             padding: 16px;
-            border-radius: 6px;
+            text-align: center;
         }
 
-        .result-box .details .label {
-            font-size: 12px;
-            color: #777;
+        .detail-icon { font-size: 22px; margin-bottom: 8px; }
+        .detail-value { font-size: 16px; font-weight: 700; color: #111827; }
+        .detail-label { font-size: 12px; color: #6b7280; margin-top: 3px; }
+
+        /* Confidence */
+        .confidence-block {
+            background: #f8fafc;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-bottom: 20px;
         }
 
-        .result-box .details .value {
-            font-size: 20px;
-            font-weight: 700;
+        .confidence-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 10px;
         }
+
+        .confidence-bar {
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .confidence-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width .8s ease;
+        }
+
+        /* CTA buttons */
+        .result-cta {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .cta-btn {
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all .2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .cta-btn.primary {
+            background: linear-gradient(135deg, #1D4E89, #1a3d6e);
+            color: white;
+        }
+
+        .cta-btn.primary:hover { opacity: .9; transform: translateY(-1px); }
+
+        .cta-btn.secondary {
+            background: #f8fafc;
+            border: 1.5px solid #e5e7eb;
+            color: #374151;
+        }
+
+        .cta-btn.secondary:hover { border-color: #1D4E89; color: #1D4E89; background: #eff6ff; }
+
+        .cta-btn.ghost {
+            background: none;
+            border: none;
+            color: #9ca3af;
+            font-size: 13px;
+            padding: 8px;
+        }
+
+        .cta-btn.ghost:hover { color: #6b7280; }
+
+        /* Error */
+        .result-error {
+            text-align: center;
+            padding: 40px 24px;
+        }
+
+        .error-icon { font-size: 40px; margin-bottom: 12px; }
+        .error-title { font-size: 18px; font-weight: 700; color: #dc2626; margin-bottom: 6px; }
+        .error-msg { font-size: 14px; color: #6b7280; margin-bottom: 20px; }
 
         @media (max-width: 680px) {
-            .estimation-container {
-                padding: 24px;
-                margin: 24px auto;
-            }
-
-            .form-row,
-            .checks,
-            .result-box .details {
-                grid-template-columns: 1fr;
-            }
-
-            .btn-group {
-                flex-direction: column;
-            }
+            .estim-hero h1 { font-size: 30px; }
+            .estim-card { margin: -32px 16px 40px; }
+            .form-step { padding: 20px; }
+            .form-row, .type-cards, .option-checks, .result-details { grid-template-columns: 1fr 1fr; }
+            .result-price { font-size: 36px; }
+            .step-indicator { padding: 20px 20px 0; }
         }
     </style>
 </head>
@@ -192,107 +483,151 @@
         </nav>
     </header>
 
-    <main>
+    <!-- Hero -->
+    <div class="estim-hero">
         <div class="container">
-            <div class="estimation-container">
-                <h1>Estimer votre bien</h1>
-                <p class="subtitle">Obtenez une estimation en quelques secondes.</p>
+            <div class="estim-badge">🤖 Estimation par IA</div>
+            <h1>Quelle est la valeur<br>de votre bien ?</h1>
+            <p>Notre algorithme analyse le marché en temps réel pour vous donner une estimation précise.</p>
+        </div>
+    </div>
 
-                <div class="step-indicator" id="stepIndicator">
-                    <span class="step-dot active" data-step="1"></span>
-                    <span class="step-dot" data-step="2"></span>
-                    <span class="step-dot" data-step="3"></span>
-                    <span class="step-dot" data-step="4"></span>
+    <!-- Card principale -->
+    <div class="container">
+        <div class="estim-card">
+            <!-- Step indicator -->
+            <div class="step-indicator">
+                <div class="step-dot-wrapper">
+                    <div class="step-dot active" data-step="1">1</div>
+                    <div class="step-dot-label">Type</div>
+                </div>
+                <div class="step-dot-wrapper">
+                    <div class="step-dot" data-step="2">2</div>
+                    <div class="step-dot-label">Localisation</div>
+                </div>
+                <div class="step-dot-wrapper">
+                    <div class="step-dot" data-step="3">3</div>
+                    <div class="step-dot-label">Caractéristiques</div>
+                </div>
+                <div class="step-dot-wrapper">
+                    <div class="step-dot" data-step="4">4</div>
+                    <div class="step-dot-label">Résultat</div>
+                </div>
+            </div>
+
+            <form id="estimationForm">
+                <!-- Étape 1 : Type -->
+                <div class="form-step active" data-step="1">
+                    <h3>Type de bien</h3>
+                    <p class="step-subtitle">Sélectionnez la catégorie correspondant à votre bien.</p>
+
+                    <div class="type-cards">
+                        <div class="type-card" onclick="selectType('maison', this)">
+                            <div class="type-icon">🏡</div>
+                            <div class="type-name">Maison</div>
+                        </div>
+                        <div class="type-card" onclick="selectType('appartement', this)">
+                            <div class="type-icon">🏢</div>
+                            <div class="type-name">Appartement</div>
+                        </div>
+                        <div class="type-card" onclick="selectType('commerce', this)">
+                            <div class="type-icon">🏪</div>
+                            <div class="type-name">Commerce</div>
+                        </div>
+                    </div>
+                    <input type="hidden" id="type_bien">
+
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-primary" onclick="validateStep1()">Suivant →</button>
+                    </div>
                 </div>
 
-                <form id="estimationForm">
-                    <div class="form-step active" data-step="1">
-                        <h3>Type de bien</h3>
-                        <div class="form-group">
-                            <label for="type_bien">Type de bien *</label>
-                            <select id="type_bien" required>
-                                <option value="">Sélectionnez...</option>
-                                <option value="maison">Maison</option>
-                                <option value="appartement">Appartement</option>
-                                <option value="commerce">Local commercial</option>
-                            </select>
-                        </div>
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-primary" onclick="goToStep(2)">Suivant</button>
-                        </div>
+                <!-- Étape 2 : Localisation -->
+                <div class="form-step" data-step="2">
+                    <h3>Localisation</h3>
+                    <p class="step-subtitle">Indiquez où se trouve votre bien.</p>
+
+                    <div class="form-group">
+                        <label for="ville">Ville *</label>
+                        <input type="text" id="ville" placeholder="Ex: Aix-en-Provence, Lyon, Paris...">
+                    </div>
+                    <div class="form-group">
+                        <label for="code_postal">Code postal *</label>
+                        <input type="text" id="code_postal" placeholder="Ex: 13100, 69001, 75008">
                     </div>
 
-                    <div class="form-step" data-step="2">
-                        <h3>Localisation</h3>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-outline" onclick="goToStep(1)">← Retour</button>
+                        <button type="button" class="btn btn-primary" onclick="validateStep2()">Suivant →</button>
+                    </div>
+                </div>
+
+                <!-- Étape 3 : Caractéristiques -->
+                <div class="form-step" data-step="3">
+                    <h3>Caractéristiques</h3>
+                    <p class="step-subtitle">Plus vous êtes précis, meilleure sera l'estimation.</p>
+
+                    <div class="form-row">
                         <div class="form-group">
-                            <label for="ville">Ville *</label>
-                            <input type="text" id="ville" placeholder="Ex: Aix-en-Provence" required>
+                            <label for="surface_m2">Surface (m²) *</label>
+                            <input type="number" id="surface_m2" placeholder="75" min="1">
                         </div>
                         <div class="form-group">
-                            <label for="code_postal">Code postal *</label>
-                            <input type="text" id="code_postal" placeholder="13090" required>
+                            <label for="nb_pieces">Nombre de pièces *</label>
+                            <input type="number" id="nb_pieces" placeholder="3" min="1">
                         </div>
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-outline" onclick="goToStep(1)">Précédent</button>
-                            <button type="button" class="btn btn-primary" onclick="goToStep(3)">Suivant</button>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="etage">Étage</label>
+                            <input type="number" id="etage" placeholder="0" min="0">
                         </div>
+                        <div class="form-group">
+                            <label for="annee_construction">Année de construction</label>
+                            <input type="number" id="annee_construction" placeholder="2000" min="1800" max="2026">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="etat_general">État général</label>
+                        <select id="etat_general">
+                            <option value="1">🔴 Mauvais état</option>
+                            <option value="2">🟡 Correct</option>
+                            <option value="3" selected>🟢 Bon état</option>
+                            <option value="4">⭐ Très bon état</option>
+                            <option value="5">✨ Excellent / Rénové</option>
+                        </select>
                     </div>
 
-                    <div class="form-step" data-step="3">
-                        <h3>Caractéristiques</h3>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="surface_m2">Surface (m²) *</label>
-                                <input type="number" id="surface_m2" placeholder="75" min="1" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="nb_pieces">Nombre de pièces *</label>
-                                <input type="number" id="nb_pieces" placeholder="3" min="1" required>
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="etage">Étage</label>
-                                <input type="number" id="etage" placeholder="0">
-                            </div>
-                            <div class="form-group">
-                                <label for="annee_construction">Année de construction</label>
-                                <input type="number" id="annee_construction" placeholder="2010" min="1800" max="2026">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="etat_general">État général</label>
-                            <select id="etat_general">
-                                <option value="1">Mauvais</option>
-                                <option value="2">Correct</option>
-                                <option value="3" selected>Bon</option>
-                                <option value="4">Très bon</option>
-                                <option value="5">Excellent</option>
-                            </select>
-                        </div>
-                        <div class="checks">
-                            <label><input type="checkbox" id="has_garage"> Garage</label>
-                            <label><input type="checkbox" id="has_jardin"> Jardin</label>
-                            <label><input type="checkbox" id="has_piscine"> Piscine</label>
-                        </div>
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-outline" onclick="goToStep(2)">Précédent</button>
-                            <button type="button" class="btn btn-primary" onclick="submitEstimation()">Estimer</button>
-                        </div>
+                    <div class="option-checks">
+                        <label class="option-check">
+                            <input type="checkbox" id="has_garage">
+                            <span>🚗 Garage</span>
+                        </label>
+                        <label class="option-check">
+                            <input type="checkbox" id="has_jardin">
+                            <span>🌿 Jardin</span>
+                        </label>
+                        <label class="option-check">
+                            <input type="checkbox" id="has_piscine">
+                            <span>🏊 Piscine</span>
+                        </label>
                     </div>
 
-                    <div class="form-step" data-step="4">
-                        <h3>Résultat de l'estimation</h3>
-                        <div id="resultContent"></div>
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-outline" onclick="goToStep(3)">Modifier</button>
-                            <button type="button" class="btn btn-primary" onclick="location.href='biens.html'">Voir les biens</button>
-                        </div>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-outline" onclick="goToStep(2)">← Retour</button>
+                        <button type="button" class="btn btn-primary" onclick="submitEstimation()">🔍 Estimer maintenant</button>
                     </div>
-                </form>
-            </div>
+                </div>
+
+                <!-- Étape 4 : Résultat -->
+                <div class="form-step" data-step="4">
+                    <h3>Votre estimation</h3>
+                    <p class="step-subtitle">Résultat basé sur l'analyse du marché immobilier actuel.</p>
+                    <div id="resultContent"></div>
+                </div>
+            </form>
         </div>
-    </main>
+    </div>
 
     <footer>
         <div class="container">
@@ -301,6 +636,45 @@
     </footer>
 
     <script src="../js/config.js"></script>
+    <script>
+        function selectType(value, el) {
+            document.querySelectorAll('.type-card').forEach(c => c.classList.remove('selected'));
+            el.classList.add('selected');
+            document.getElementById('type_bien').value = value;
+        }
+
+        function validateStep1() {
+            if (!document.getElementById('type_bien').value) {
+                const existing = document.querySelector('.form-step.active .form-error');
+                if (!existing) {
+                    const err = document.createElement('p');
+                    err.className = 'form-error';
+                    err.textContent = 'Veuillez sélectionner un type de bien.';
+                    document.querySelector('.form-step.active .btn-group').insertAdjacentElement('beforebegin', err);
+                    setTimeout(() => err.remove(), 3000);
+                }
+                return;
+            }
+            goToStep(2);
+        }
+
+        function validateStep2() {
+            const ville = document.getElementById('ville').value.trim();
+            const cp = document.getElementById('code_postal').value.trim();
+            if (!ville || !cp) {
+                const existing = document.querySelector('.form-step.active .form-error');
+                if (!existing) {
+                    const err = document.createElement('p');
+                    err.className = 'form-error';
+                    err.textContent = 'Veuillez renseigner la ville et le code postal.';
+                    document.querySelector('.form-step.active .btn-group').insertAdjacentElement('beforebegin', err);
+                    setTimeout(() => err.remove(), 3000);
+                }
+                return;
+            }
+            goToStep(3);
+        }
+    </script>
     <script src="../js/estimation.js"></script>
 </body>
 

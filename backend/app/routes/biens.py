@@ -33,6 +33,19 @@ def list_biens(
         query = query.filter(models.Bien.surface_m2 <= surface_max)
     return query.offset(skip).limit(limit).all()
 
+@router.get("/mine", response_model=List[schemas.Bien])
+def list_my_biens(
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(auth.get_current_user)
+):
+    """Retourne uniquement les biens appartenant à l'utilisateur connecté."""
+    if current_user.role == "admin":
+        return db.query(models.Bien).all()
+    if current_user.role == "client":
+        return []
+    return db.query(models.Bien).filter(models.Bien.agent_id == current_user.id).all()
+
+
 @router.get("/{bien_id}", response_model=schemas.Bien)
 def get_bien(bien_id: int, db: Session = Depends(get_db)):
     bien = db.query(models.Bien).filter(models.Bien.id == bien_id).first()
